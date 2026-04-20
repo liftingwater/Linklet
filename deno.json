@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "start": "deno serve --env -A --unstable-kv --unstable-net src/main.ts",
+    "start": "deno serve -A --unstable-kv --unstable-net src/main.ts",
     "dev": "deno serve --watch --env -A --unstable-kv --unstable-net src/main.ts",
     "test": "deno test --unstable-kv --unstable-net tests/"
   },
