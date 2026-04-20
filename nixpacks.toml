@@ -2,10 +2,14 @@
 # Specifies the Deno version and startup configuration
 
 [phases.setup]
-nixPkgs = ["deno"]
+nixPkgs = []
 
 [phases.install]
-cmds = ["rm deno.lock", "deno upgrade --version 2.7.11", "deno cache src/main.ts"]
+cmds = [
+  "curl -fsSL https://deno.land/install.sh | sh",
+  "export PATH=$HOME/.deno/bin:$PATH",
+  "deno cache src/main.ts"
+]
 
 [start]
 cmd = "deno task start"
