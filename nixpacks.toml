@@ -5,7 +5,7 @@
 nixPkgs = ["deno"]
 
 [phases.install]
-cmds = ["deno cache --unstable-kv --unstable-net src/main.ts"]
+cmds = ["deno cache src/main.ts"]
 
 [start]
 cmd = "deno task start"
