@@ -7,9 +7,8 @@ nixPkgs = ["unzip"]
 [phases.install]
 cmds = [
   "curl -fsSL https://deno.land/install.sh | sh",
-  "export PATH=$HOME/.deno/bin:$PATH",
-  "deno cache src/main.ts"
+  "$HOME/.deno/bin/deno cache src/main.ts"
 ]
 
 [start]
-cmd = "deno task start"
+cmd = "export PATH=$HOME/.deno/bin:$PATH && deno task start"
