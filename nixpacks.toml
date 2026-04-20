@@ -2,7 +2,7 @@
 # Specifies the Deno version and startup configuration
 
 [phases.setup]
-nixPkgs = []
+nixPkgs = ["unzip"]
 
 [phases.install]
 cmds = [
