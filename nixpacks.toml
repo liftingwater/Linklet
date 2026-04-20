@@ -1,0 +1,11 @@
+# Nixpacks configuration for Sevalla deployment
+# Specifies the Deno version and startup configuration
+
+[phases.setup]
+nixPkgs = ["deno"]
+
+[phases.install]
+cmds = ["deno cache --unstable-kv src/main.ts"]
+
+[start]
+cmd = "deno task start"
