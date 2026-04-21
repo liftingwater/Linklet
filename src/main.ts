@@ -151,7 +151,10 @@ app.get('/:id', async (req) => {
   }
 });
 
+const port = parseInt(Deno.env.get("PORT") || "8000", 10);
+
 export default {
+  port,
   fetch(req) {
     return app.handler(req)
   }
