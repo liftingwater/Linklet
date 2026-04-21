@@ -11,4 +11,4 @@ cmds = [
 ]
 
 [start]
-cmd = "export PATH=$HOME/.deno/bin:$PATH && deno task start"
+cmd = "export PATH=$HOME/.deno/bin:$PATH && $HOME/.deno/bin/deno serve -A --unstable-kv --unstable-net src/main.ts"
