@@ -151,7 +151,12 @@ app.get('/:id', async (req) => {
   }
 });
 
+const port = parseInt(Deno.env.get("PORT") || "8000");
+const hostname = "0.0.0.0";
+
 export default {
+  port,
+  hostname,
   fetch(req) {
     return app.handler(req)
   }
