@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 
-import { ComponentChildren } from "preact"
+import type { ComponentChildren } from "preact"
 import { type User, ShortLink } from "./db.ts"
 
 interface PageProps {
@@ -11,35 +11,21 @@ interface PageProps {
 
 export function Layout({ children }: {children: ComponentChildren}) {
     return (
-        <html>
-            <head>
-                <meta charSet="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <link
-                href="https://cdn.jsdelivr.net/npm/daisyui@4.12.13/dist/full.min.css"
-                rel="stylesheet"
-                type="text/css"
-                />
-                <script src="https://cdn.tailwindcss.com"></script>
-            </head>
+        <>
+            <header>
+                <nav>
+                    <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/links">My Links</a></li>
+                    <li><a href="/links/new">Create Links</a></li>
+                    </ul>
+                </nav>
+            </header>
 
-            <body>
-                <header>
-                    <nav>
-                        <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/links">My Links</a></li>
-                        <li><a href="/links/new">Create Links</a></li>
-                        </ul>
-                    </nav>
-                </header>
-
-                <main>
-                    {children}
-                </main>
-
-            </body>
-        </html>
+            <main>
+                {children}
+            </main>
+        </>
     )
 }
 
