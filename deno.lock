@@ -32,8 +32,7 @@
     "jsr:@std/streams@^1.0.17": "1.0.17",
     "npm:preact-render-to-string@*": "6.6.7_preact@10.29.1",
     "npm:preact-render-to-string@^6.6.7": "6.6.7_preact@10.29.1",
-    "npm:preact@*": "10.29.1",
-    "npm:preact@10.29.1": "10.29.1",
+    "npm:preact@10.19.3": "10.19.3",
     "npm:preact@^10.29.1": "10.29.1"
   },
   "jsr": {
@@ -154,8 +153,11 @@
     "preact-render-to-string@6.6.7_preact@10.29.1": {
       "integrity": "sha512-3XdbsX3+vn9dQW+jJI/FsI9rlkgl6dbeUpqLsChak6jp3j3auFqBCkno7VChbMFs5Q8ylBj6DrUkKRwtVN3nvw==",
       "dependencies": [
-        "preact"
+        "preact@10.29.1"
       ]
+    },
+    "preact@10.19.3": {
+      "integrity": "sha512-nHHTeFVBTHRGxJXKkKu5hT8C/YWBkPso4/Gad6xuj5dbptt9iF9NZr9pHbPhBrnT2klheu7mHTxTZ/LjwJiEiQ=="
     },
     "preact@10.29.1": {
       "integrity": "sha512-gQCLc/vWroE8lIpleXtdJhTFDogTdZG9AjMUpVkDf2iTCNwYNWA+u16dL41TqUDJO4gm2IgrcMv3uTpjd4Pwmg=="
@@ -177,7 +179,6 @@
       "jsr:@std/encoding@^1.0.7",
       "jsr:@std/http@1",
       "npm:preact-render-to-string@^6.6.7",
-      "npm:preact@*",
       "npm:preact@^10.29.1"
     ]
   }

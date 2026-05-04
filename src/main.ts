@@ -19,6 +19,23 @@ import { auth, handleGithubCallback } from "./auth.ts"
 
 const app = new Router();
 
+// Helper function to wrap page content with full HTML document
+function renderPage(pageComponent: any) {
+  const pageHtml = render(pageComponent);
+  const html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css" />
+    <title>Linklet</title>
+  </head>
+  <body>
+    ${pageHtml}
+  </body>
+</html>`;
+  return html;
+}
 
 app.get("/oauth/signin", (req: Request) => auth.signIn(req))
 app.get("/oauth/signout", auth.signOut)
@@ -28,16 +45,16 @@ app.get("/oauth/callback", handleGithubCallback)
 app.post('/health-check', () => new Response("IT'S ALIVE!"));
 
 function unauthorizedResponse () {
-  return new Response(render(UnauthorizedPage()), {
+  return new Response(renderPage(UnauthorizedPage()), {
     status: 401,
     headers: { "Content-Type": "text/html" }
   })
 }
 
 
-app.get('/', () => { 
+app.get('/', () => {
   return new Response(
-    render(HomePage({ user: app.currentUser })), 
+    renderPage(HomePage({ user: app.currentUser })),
     {
       status: 200,
       headers: { "Content-Type": "text/html" }
@@ -49,7 +66,7 @@ app.get('/', () => {
 app.get('/links/new', (_req) => {
   if (!app.currentUser) return unauthorizedResponse();
 
-  return new Response(render(CreateShortLinkPage()), {
+  return new Response(renderPage(CreateShortLinkPage()), {
     status: 200,
     headers: { "Content-Type": "text/html" }
   })
@@ -86,7 +103,7 @@ app.get('/links', async () => {
 
   const shortLinks = await getUserLinks(app.currentUser.login)
 
-  return new Response(render(LinksPage({ shortLinkList: shortLinks })), {
+  return new Response(renderPage(LinksPage({ shortLinkList: shortLinks })), {
     status: 200,
     headers: { "Content-Type": "text/html" }
   });
@@ -100,7 +117,7 @@ app.get('/links/:id', async (req) => {
 
   const data = await getShortUrl(shortCode || "");
   if (!data || !data.value) {
-    return new Response(render(NotFoundPage()), {
+    return new Response(renderPage(NotFoundPage()), {
       status: 404,
       headers: { "Content-Type": "text/html" }
     })
@@ -128,7 +145,7 @@ app.get('/:id', async (req) => {
   const shortCode = new URL(req.url).pathname.slice(1);
 
   if (!shortCode) {
-    return new Response(render(NotFoundPage()), {
+    return new Response(renderPage(NotFoundPage()), {
       status: 404,
       headers: { "Content-Type": "text/html" }
     });
@@ -144,7 +161,7 @@ app.get('/:id', async (req) => {
       headers: { "Location": shortLink.value!.longUrl },
     })
   } else {
-    return new Response(render(NotFoundPage()), {
+    return new Response(renderPage(NotFoundPage()), {
       status: 404,
       headers: { "Content-Type": "text/html" }
     });
