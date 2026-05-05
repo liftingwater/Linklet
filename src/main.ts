@@ -155,10 +155,10 @@ app.get('/:id', async (req) => {
 
   // TODO: Capture analytics data about the number of times the link was used
 
-  if (shortLink) {
+  if (shortLink?.value) {
     return new Response(null, {
       status: 303,
-      headers: { "Location": shortLink.value!.longUrl },
+      headers: { "Location": shortLink.value.longUrl },
     })
   } else {
     return new Response(renderPage(NotFoundPage()), {
