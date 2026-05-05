@@ -11,24 +11,32 @@ interface PageProps {
 
 export function Layout({ children }: {children: ComponentChildren}) {
     return (
-        <>
-            <header>
-                <nav>
-                    <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/links">My Links</a></li>
-                    <li><a href="/links/new">Create Links</a></li>
-                    </ul>
-                </nav>
-            </header>
-
-            <main>
-                {children}
-            </main>
-        </>
+        <html lang="en">
+            <head>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <link rel="stylesheet" href="/static/pico.min.css" />
+            </head>
+            <body>
+                <div class="grid" style="grid-template-columns: 200px 1fr; min-height: 100vh; gap: 0;">
+                    <aside style="background: var(--pico-primary-background); padding: 1rem;">
+                        <nav>
+                            <h3>Linklet</h3>
+                            <ul>
+                                <p><a href="/">Home</a></p>
+                                <p><a href="/links">My Links</a></p>
+                                <p><a href="/links/new">New Link</a></p>
+                            </ul>
+                        </nav>
+                    </aside>
+                    <main class="container-fluid">
+                        {children}
+                    </main>
+                </div>
+            </body>
+        </html>
     )
 }
-
 
 export function HomePage({ user }: PageProps) {
     return (

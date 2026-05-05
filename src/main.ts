@@ -1,4 +1,5 @@
 import { Router } from "./router.ts";
+import { serveDir } from "@std/http/file-server";
 import { 
   storeShortURL,
   getShortUrl,
@@ -21,25 +22,14 @@ const app = new Router();
 
 // Helper function to wrap page content with full HTML document
 function renderPage(pageComponent: any) {
-  const pageHtml = render(pageComponent);
-  const html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/style.css" />
-    <title>Linklet</title>
-  </head>
-  <body>
-    ${pageHtml}
-  </body>
-</html>`;
-  return html;
+  return `<!DOCTYPE html>${render(pageComponent)}`;
 }
 
 app.get("/oauth/signin", (req: Request) => auth.signIn(req))
 app.get("/oauth/signout", auth.signOut)
 app.get("/oauth/callback", handleGithubCallback)
+
+app.get('/static/*', (req) => serveDir(req, { fsRoot: "static", urlRoot: "static" }))
 
 
 app.post('/health-check', () => new Response("IT'S ALIVE!"));
