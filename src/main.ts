@@ -3,7 +3,8 @@ import { serveDir } from "@std/http/file-server";
 import { 
   storeShortURL,
   getShortUrl,
-  getUserLinks
+  getUserLinks,
+  isValidRedirectUrl
 } from "./db.ts";
 
 import { render } from "preact-render-to-string";
@@ -71,6 +72,10 @@ app.post('/links', async (req) => {
 
   if (!longUrl) {
     return new Response( "Missing longUrl", {status: 400})
+  }
+
+  if (!isValidRedirectUrl(longUrl)) {
+    return new Response("Invalid URL - url must begin with 'http' or 'https'", { status: 400} );
   }
 
   try {
@@ -146,6 +151,11 @@ app.get('/:id', async (req) => {
   // TODO: Capture analytics data about the number of times the link was used
 
   if (shortLink?.value) {
+
+    // Validate the URL before redirecting
+    if (!isValidRedirectUrl(longurl)) {
+      return new Response("Invalid redirect target", { status: 400 });
+    }
     return new Response(null, {
       status: 303,
       headers: { "Location": shortLink.value.longUrl },

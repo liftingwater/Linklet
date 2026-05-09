@@ -26,6 +26,17 @@ export type ClickAnalytics = {
 };
 
 
+// URL validation
+export function isValidRedirectUrl(url: string): boolean {
+    try {
+        const parsed_input = new URL(url);
+        return parsed_input.protocol in ["http", "https"];
+    } catch {
+        return false;
+    }
+}
+
+
 // Manage Links
 export async function generateUrlShortCode (longUrl: string) {
 
