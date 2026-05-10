@@ -1,8 +1,10 @@
 import { Router } from "./router.ts";
+import { serveDir } from "@std/http/file-server";
 import { 
   storeShortURL,
   getShortUrl,
-  getUserLinks
+  getUserLinks,
+  isValidRedirectUrl
 } from "./db.ts";
 
 import { render } from "preact-render-to-string";
@@ -21,25 +23,14 @@ const app = new Router();
 
 // Helper function to wrap page content with full HTML document
 function renderPage(pageComponent: any) {
-  const pageHtml = render(pageComponent);
-  const html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/style.css" />
-    <title>Linklet</title>
-  </head>
-  <body>
-    ${pageHtml}
-  </body>
-</html>`;
-  return html;
+  return `<!DOCTYPE html>${render(pageComponent)}`;
 }
 
 app.get("/oauth/signin", (req: Request) => auth.signIn(req))
 app.get("/oauth/signout", auth.signOut)
 app.get("/oauth/callback", handleGithubCallback)
+
+app.get('/static/*', (req) => serveDir(req, { fsRoot: "static", urlRoot: "static" }))
 
 
 app.post('/health-check', () => new Response("IT'S ALIVE!"));
@@ -81,6 +72,10 @@ app.post('/links', async (req) => {
 
   if (!longUrl) {
     return new Response( "Missing longUrl", {status: 400})
+  }
+
+  if (!isValidRedirectUrl(longUrl)) {
+    return new Response("Invalid URL - url must begin with 'http' or 'https'", { status: 400} );
   }
 
   try {
@@ -155,10 +150,15 @@ app.get('/:id', async (req) => {
 
   // TODO: Capture analytics data about the number of times the link was used
 
-  if (shortLink) {
+  if (shortLink?.value) {
+
+    // Validate the URL before redirecting
+    if (!isValidRedirectUrl(longurl)) {
+      return new Response("Invalid redirect target", { status: 400 });
+    }
     return new Response(null, {
       status: 303,
-      headers: { "Location": shortLink.value!.longUrl },
+      headers: { "Location": shortLink.value.longUrl },
     })
   } else {
     return new Response(renderPage(NotFoundPage()), {
