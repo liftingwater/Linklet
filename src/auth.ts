@@ -7,9 +7,15 @@ export const oauthConfig = createGitHubOAuthConfig({
 });
 export const auth = createHelpers(oauthConfig)
 
+
 export async function getCurrentUser (req: Request) {
-    const sessionId = await auth.getSessionId(req);
-    return sessionId ? await getUser(sessionId) : null
+    try {
+        const sessionId = await auth.getSessionId(req);
+        return sessionId ? await getUser(sessionId) : null
+    } catch (e) {
+        console.log("returning error: ", JSON.stringify(e))
+        return null;
+    }
 }
 
 
