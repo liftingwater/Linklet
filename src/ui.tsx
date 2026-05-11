@@ -21,7 +21,7 @@ export function Layout({ children }: {children: ComponentChildren}) {
                 <div class="grid" style="grid-template-columns: 200px 1fr; min-height: 100vh; gap: 0;">
                     <aside style="background: var(--pico-primary-background); padding: 1rem;">
                         <nav>
-                            <h3>Linklet</h3>
+                            <h3>Linkify</h3>
                             <ul>
                                 <p><a href="/">Home</a></p>
                                 <p><a href="/links">My Links</a></p>
@@ -59,11 +59,12 @@ export function HomePage({ user }: PageProps) {
     )
 }
 
-export function CreateShortLinkPage() {
+export function CreateShortLinkPage({csrfToken}: { csrfToken: string }) {
     return(
         <Layout>
             <h2>Create New ShortLink</h2>
             <form action="/links" method="POST">
+                <input type="hidden" name="_csrf" value={csrfToken} />
                 <div>
                     <label>
                         <span>Long URL</span>

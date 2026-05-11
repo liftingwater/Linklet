@@ -8,6 +8,12 @@ export const oauthConfig = createGitHubOAuthConfig({
 export const auth = createHelpers(oauthConfig)
 
 
+// Define get session ID here so that routes.ts can use it.  
+export async function getSessionId(req: Request): Promise<string | undefined> {
+    return await auth.getSessionId(req);
+}
+
+
 export async function getCurrentUser (req: Request) {
     try {
         const sessionId = await auth.getSessionId(req);
