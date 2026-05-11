@@ -4,7 +4,9 @@ import {
   storeShortURL,
   getShortUrl,
   getUserLinks,
-  isValidRedirectUrl
+  isValidRedirectUrl,
+  generateCsrfToken,
+  validateCsrfToken
 } from "./db.ts";
 
 import { render } from "preact-render-to-string";
@@ -16,7 +18,11 @@ import {
   NotFoundPage
 } from "./ui.tsx";
 
-import { auth, handleGithubCallback } from "./auth.ts"
+import { 
+  auth, 
+  handleGithubCallback, 
+  getSessionId 
+} from "./auth.ts"
 
 
 const app = new Router();
@@ -54,10 +60,13 @@ app.get('/', () => {
 });
 
 
-app.get('/links/new', (_req) => {
+app.get('/links/new', async (req) => {
   if (!app.currentUser) return unauthorizedResponse();
 
-  return new Response(renderPage(CreateShortLinkPage()), {
+  const sessionId = await getSessionId(req);
+  const csrfToken = await generateCsrfToken(sessionId!);
+
+  return new Response(renderPage(CreateShortLinkPage({ csrfToken })), {
     status: 200,
     headers: { "Content-Type": "text/html" }
   })
@@ -67,7 +76,15 @@ app.get('/links/new', (_req) => {
 app.post('/links', async (req) => {
   if (!app.currentUser) return unauthorizedResponse();
 
+  const sessionId = await getSessionId(req);
   const formData = await req.formData();
+  const csrfToken = formData.get("_csrf") as string;
+
+  if (!sessionId || !csrfToken || !(await validateCsrfToken(sessionId, csrfToken))) {
+    return new Response("Invalid CSRF token", {'status': 403})
+  }
+
+
   const longUrl = formData.get("longUrl") as string;
 
   if (!longUrl) {
