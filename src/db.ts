@@ -58,6 +58,24 @@ export async function validateCsrfToken(sessionId: string, token: string): Promi
 }
 
 
+// Rate limiting
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+export async function checkRateLimit(userId: string): Promise<boolean> {
+    const window = Math.floor(Date.now() / RATE_LIMIT_WINDOW_MS);
+    const key = ["ratelimit", userId, window];
+
+    const entry = await kv.get<number>(key);
+    const current = entry.value ?? 0;
+
+    if (current >= RATE_LIMIT_MAX) return false;
+
+    await kv.set(key, current + 1, { expireIn: RATE_LIMIT_WINDOW_MS });
+    return true;
+}
+
+
 // Manage Links
 export async function generateUrlShortCode (longUrl: string) {
 
