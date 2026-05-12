@@ -30,6 +30,7 @@ export function Layout({ children }: {children: ComponentChildren}) {
                         </nav>
                     </aside>
                     <main class="container-fluid">
+                        
                         {children}
                     </main>
                 </div>
@@ -42,18 +43,16 @@ export function HomePage({ user }: PageProps) {
     return (
         <Layout>
             <div>
+                {user ? (
                 <div>
-                    {user ? (
+                    <div>Welcome back, {user.login}!</div>
                     <div>
-                        <div>Welcome back, {user.login}!</div>
-                        <div>
-                        <a href="/oauth/signout">Sign Out</a>
-                        </div>
+                    <a href="/oauth/signout">Sign Out</a>
                     </div>
-                    ) : (
-                    <a href="/oauth/signin">Sign In with GitHub</a>
-                    )}
                 </div>
+                ) : (
+                <a href="/oauth/signin">Sign In with GitHub</a>
+                )}
             </div>
         </Layout>
     )
@@ -87,19 +86,20 @@ export function LinksPage({ shortLinkList }: PageProps) {
     return(
         <Layout>
             {shortLinkList?.map((link) => (
-              <div key={link?.shortCode} >
-                <div>
-                  <h3><a href={`/links/${link?.shortCode}`}>{link?.shortCode}</a></h3>
-                  <p>
-                    {link?.longUrl}
-                  </p>
-                  <div>
-                    <div>
-                      {link?.clickCount} clicks
+                <article>
+                    <div key={link?.shortCode} >
+                        <div>
+                        
+                        <h4>{link?.longUrl}</h4>
+                        <p><a href={`/links/${link?.shortCode}`}>{link?.shortCode}</a></p>
+                        <div>
+                            <div>
+                            {link?.clickCount} clicks
+                            </div>
+                        </div>
+                        </div>
                     </div>
-                  </div>
-                </div>
-              </div>
+                </article>
             ))}
         </Layout>
     )
