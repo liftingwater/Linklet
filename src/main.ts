@@ -67,7 +67,7 @@ app.get('/links/new', async (req) => {
   const sessionId = await getSessionId(req);
   const csrfToken = await generateCsrfToken(sessionId!);
 
-  return new Response(renderPage(CreateShortLinkPage({ csrfToken })), {
+  return new Response(renderPage(CreateShortLinkPage({ user: app.currentUser, csrfToken })), {
     status: 200,
     headers: { "Content-Type": "text/html" }
   })
@@ -119,7 +119,7 @@ app.get('/links', async () => {
 
   const shortLinks = await getUserLinks(app.currentUser.login)
 
-  return new Response(renderPage(LinksPage({ shortLinkList: shortLinks })), {
+  return new Response(renderPage(LinksPage({ user: app.currentUser, shortLinkList: shortLinks })), {
     status: 200,
     headers: { "Content-Type": "text/html" }
   });
@@ -174,7 +174,7 @@ app.get('/:id', async (req) => {
   if (shortLink?.value) {
 
     // Validate the URL before redirecting
-    if (!isValidRedirectUrl(longurl)) {
+    if (!isValidRedirectUrl(shortLink.value.longUrl)) {
       return new Response("Invalid redirect target", { status: 400 });
     }
     return new Response(null, {
