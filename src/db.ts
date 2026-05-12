@@ -18,6 +18,10 @@ export type User = {
     html_url: string
 }
 
+
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+
 // TODO: Implement Analytic Capture
 export type ClickAnalytics = {
   shortUrl: string;
@@ -40,7 +44,7 @@ export function isValidRedirectUrl(url: string): boolean {
 // csrf token management
 export async function generateCsrfToken(sessionId: string): Promise<string> {
     const csrfToken = encodeBase64(crypto.getRandomValues(new Uint8Array(32)));
-    // Expire after 1 hour
+    // Expire after 1 day
     await kv.set (["csrf", sessionId, csrfToken], true, { expireIn: 3600 * 24});
     return csrfToken
 }
@@ -107,21 +111,30 @@ export async function getShortUrl (shortCode: string) {
 export async function getUserLinks (userId: string) {
     const kv_list = kv.list<string>({ prefix: [userId] });
     const res = await Array.fromAsync(kv_list);
-    const userShortLinkKeys = res.map((v) => ["shortlink", v.value])
+    const userShortLinkKeys = res.map((link) => ["shortlink", link.value])
 
     const userRes = await kv.getMany<ShortLink[]>(userShortLinkKeys);
     const userShortLinks = await Array.fromAsync(userRes)
-    return userShortLinks.map((v) => v.value)
+    return userShortLinks.map((link) => link.value)
 }
 
 
 // Manage Users
 export async function storeUser (sessionId: string, userData: User) {
-    const res = await kv.set(["sessionId", sessionId], userData)
-    return res;
+    return await kv.set(["sessionId", sessionId], { ...userData, createdAt: Date.now() }, { expireIn: SESSION_TTL_MS })
 }
 
 export async function getUser (sessionId: string) {
-    const res = await kv.get<User>(["sessionId", sessionId])
-    return res.value || null;
+    const res = await kv.get<User>(["sessionId", sessionId]);
+    if (!res.value) return null;
+
+    if (Date.now() - res.value.createdAt > SESSION_TTL_MS) {
+        await kv.delete(["sessionId", sessionId]);
+        return null;
+    }
+
+    console.log(res)
+
+    const { createdAt: _, ...user } = res.value;
+    return user || null;
 }
