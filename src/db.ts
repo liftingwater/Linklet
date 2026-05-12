@@ -1,4 +1,4 @@
-import { encodeBase64Url } from "@std/encoding";
+import { encodeBase64, encodeBase64Url } from "@std/encoding";
 
 const kv = await Deno.openKv()
 
@@ -34,6 +34,23 @@ export function isValidRedirectUrl(url: string): boolean {
     } catch {
         return false;
     }
+}
+
+
+// csrf token management
+export async function generateCsrfToken(sessionId: string): Promise<string> {
+    const csrfToken = encodeBase64(crypto.getRandomValues(new Uint8Array(32)));
+    // Expire after 1 hour
+    await kv.set (["csrf", sessionId, csrfToken], true, { expireIn: 3600 * 24});
+    return csrfToken
+}
+
+
+export async function validateCsrfToken(sessionId: string, token: string): Promise<boolean> {
+    const csrfRecord = await kv.get(["csrf", sessionId, token])
+    if (!csrfRecord.value) { return false }
+    await kv.delete(["csrf", sessionId, token]);
+    return true;
 }
 
 
