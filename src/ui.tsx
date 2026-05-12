@@ -19,7 +19,7 @@ export function Layout({ children, user }: { children: ComponentChildren, user?:
             </head>
             <body style="margin: 0; min-height: 100vh;">
 
-                {/* Sidebar — fixed, full height, overlays header */}
+                {/* Side Bar */}
                 <aside style="position: fixed; top: 0; left: 0; width: 200px; height: 100vh; background: var(--pico-primary-background); padding: 1rem; z-index: 100;">
                     <nav>
                         <h3>Linklet</h3>
@@ -30,11 +30,8 @@ export function Layout({ children, user }: { children: ComponentChildren, user?:
                         </ul>
                     </nav>
                 </aside>
-
-                {/* Main content pushed right of sidebar */}
+                {/* Header Bar */}
                 <div style="margin-left: 200px; display: flex; flex-direction: column; min-height: 100vh;">
-
-                    {/* Top header bar */}
                     <header style="display: flex; justify-content: flex-end; align-items: center; padding: 0.75rem 1.5rem; background: var(--pico-background-color); border-bottom: 1px solid var(--pico-muted-border-color);">
                         <div>
                             {user ? (
@@ -47,7 +44,6 @@ export function Layout({ children, user }: { children: ComponentChildren, user?:
                             )}
                         </div>
                     </header>
-
                     <main class="container-fluid">
                         {children}
                     </main>
@@ -66,14 +62,10 @@ export function HomePage({ user }: PageProps) {
                 {user ? (
                     <div>
                         <h2>Welcome back, {user.login}!</h2>
-                        <p>Manage your short links below.</p>
-                        <a href="/links" role="button">View My Links</a>
                     </div>
                 ) : (
                     <div>
                         <h2>Welcome to Linklet</h2>
-                        <p>A simple URL shortener. Sign in with GitHub to get started.</p>
-                        <a href="/oauth/signin" role="button">Sign In with GitHub</a>
                     </div>
                 )}
             </div>
