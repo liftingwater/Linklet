@@ -1,12 +1,13 @@
 import { Router } from "./router.ts";
 import { serveDir } from "@std/http/file-server";
-import { 
+import {
   storeShortURL,
   getShortUrl,
   getUserLinks,
   isValidRedirectUrl,
   generateCsrfToken,
-  validateCsrfToken
+  validateCsrfToken,
+  checkRateLimit
 } from "./db.ts";
 
 import { render } from "preact-render-to-string";
@@ -84,7 +85,6 @@ app.post('/links', async (req) => {
     return new Response("Invalid CSRF token", {'status': 403})
   }
 
-
   const longUrl = formData.get("longUrl") as string;
 
   if (!longUrl) {
@@ -93,6 +93,10 @@ app.post('/links', async (req) => {
 
   if (!isValidRedirectUrl(longUrl)) {
     return new Response("Invalid URL - url must begin with 'http' or 'https'", { status: 400} );
+  }
+
+  if (!(await checkRateLimit(app.currentUser.login))) {
+    return new Response("Rate limit exceeded. You can create up to 10 links per hour.", { status: 429 });
   }
 
   try {
